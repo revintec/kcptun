@@ -25,10 +25,10 @@ package main
 import (
 	"crypto/rand"
 	"encoding/binary"
-	"strings"
-	mrand "math/rand"
 	"fmt"
+	mrand "math/rand"
 	"net"
+	"strings"
 
 	"github.com/pkg/errors"
 	kcp "github.com/xtaci/kcp-go/v5"
@@ -39,7 +39,7 @@ import (
 // dial connects to the remote address
 func dial(config *Config, block kcp.BlockCrypt) (*kcp.UDPSession, error) {
 	var remoteAddr string
-  if strings.Contains(config.RemoteAddr, ",") {
+	if strings.Contains(config.RemoteAddr, ",") {
 		parts := strings.Split(config.RemoteAddr, ",")
 		remoteAddr = parts[mrand.Intn(len(parts))]
 	} else {
@@ -47,7 +47,7 @@ func dial(config *Config, block kcp.BlockCrypt) (*kcp.UDPSession, error) {
 		if err != nil {
 			return nil, err
 		}
-	
+
 		// generate a random port
 		var randport uint64
 		err = binary.Read(rand.Reader, binary.LittleEndian, &randport)
