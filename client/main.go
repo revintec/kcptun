@@ -301,7 +301,6 @@ func main() {
 			config.NoDelay, config.Interval, config.Resend, config.NoCongestion = 1, 10, 2, 1
 		}
 
-		log.Println("version:", VERSION)
 		var listener net.Listener
 		var isUnix bool
 		if _, _, err := net.SplitHostPort(config.LocalAddr); err != nil {
@@ -319,31 +318,34 @@ func main() {
 			checkError(err)
 		}
 
-		log.Println("smux version:", config.SmuxVer)
-		log.Println("listening on:", listener.Addr())
-		log.Println("encryption:", config.Crypt)
-		log.Println("QPP:", config.QPP)
-		log.Println("QPP Count:", config.QPPCount)
-		log.Println("nodelay parameters:", config.NoDelay, config.Interval, config.Resend, config.NoCongestion)
-		log.Println("remote address:", config.RemoteAddr)
-		log.Println("sndwnd:", config.SndWnd, "rcvwnd:", config.RcvWnd)
-		log.Println("compression:", !config.NoComp)
-		log.Println("mtu:", config.MTU)
-		log.Println("datashard:", config.DataShard, "parityshard:", config.ParityShard)
-		log.Println("acknodelay:", config.AckNodelay)
-		log.Println("dscp:", config.DSCP)
-		log.Println("sockbuf:", config.SockBuf)
-		log.Println("smuxbuf:", config.SmuxBuf)
-		log.Println("streambuf:", config.StreamBuf)
-		log.Println("keepalive:", config.KeepAlive)
-		log.Println("conn:", config.Conn)
-		log.Println("autoexpire:", config.AutoExpire)
-		log.Println("scavengettl:", config.ScavengeTTL)
-		log.Println("snmplog:", config.SnmpLog)
-		log.Println("snmpperiod:", config.SnmpPeriod)
-		log.Println("quiet:", config.Quiet)
-		log.Println("tcp:", config.TCP)
-		log.Println("pprof:", config.Pprof)
+		log.Println(
+			"version:", VERSION,
+			"smux version:", config.SmuxVer,
+			"listening on:", listener.Addr(),
+			"encryption:", config.Crypt,
+			"QPP:", config.QPP,
+			"QPP Count:", config.QPPCount,
+			"nodelay parameters:", config.NoDelay, config.Interval, config.Resend, config.NoCongestion,
+			"remote address:", config.RemoteAddr,
+			"sndwnd:", config.SndWnd, "rcvwnd:", config.RcvWnd,
+			"compression:", !config.NoComp,
+			"mtu:", config.MTU,
+			"datashard:", config.DataShard, "parityshard:", config.ParityShard,
+			"acknodelay:", config.AckNodelay,
+			"dscp:", config.DSCP,
+			"sockbuf:", config.SockBuf,
+			"smuxbuf:", config.SmuxBuf,
+			"streambuf:", config.StreamBuf,
+			"keepalive:", config.KeepAlive,
+			"conn:", config.Conn,
+			"autoexpire:", config.AutoExpire,
+			"scavengettl:", config.ScavengeTTL,
+			"snmplog:", config.SnmpLog,
+			"snmpperiod:", config.SnmpPeriod,
+			"quiet:", config.Quiet,
+			"tcp:", config.TCP,
+			"pprof:", config.Pprof,
+		)
 
 		// QPP parameters check
 		if config.QPP {
@@ -373,9 +375,9 @@ func main() {
 			log.Fatal("unsupported smux version:", config.SmuxVer)
 		}
 
-		log.Println("initiating key derivation")
+		// log.Println("initiating key derivation")
 		pass := pbkdf2.Key([]byte(config.Key), []byte(SALT), 4096, 32, sha1.New)
-		log.Println("key derivation done")
+		// log.Println("key derivation done")
 		var block kcp.BlockCrypt
 		switch config.Crypt {
 		case "null":
