@@ -26,7 +26,6 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"fmt"
-	mrand "math/rand"
 	"net"
 	"strings"
 
@@ -37,11 +36,11 @@ import (
 )
 
 // dial connects to the remote address
-func dial(config *Config, block kcp.BlockCrypt) (*kcp.UDPSession, error) {
+func dial(config *Config, block kcp.BlockCrypt, idx int) (*kcp.UDPSession, error) {
 	var remoteAddr string
 	if strings.Contains(config.RemoteAddr, ",") {
 		parts := strings.Split(config.RemoteAddr, ",")
-		remoteAddr = parts[mrand.Intn(len(parts))]
+		remoteAddr = parts[idx]
 	} else {
 		mp, err := std.ParseMultiPort(config.RemoteAddr)
 		if err != nil {

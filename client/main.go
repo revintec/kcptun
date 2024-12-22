@@ -32,6 +32,8 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/crypto/pbkdf2"
@@ -301,27 +303,10 @@ func main() {
 			config.NoDelay, config.Interval, config.Resend, config.NoCongestion = 1, 10, 2, 1
 		}
 
-		var listener net.Listener
-		var isUnix bool
-		if _, _, err := net.SplitHostPort(config.LocalAddr); err != nil {
-			isUnix = true
-		}
-		if isUnix {
-			addr, err := net.ResolveUnixAddr("unix", config.LocalAddr)
-			checkError(err)
-			listener, err = net.ListenUnix("unix", addr)
-			checkError(err)
-		} else {
-			addr, err := net.ResolveTCPAddr("tcp", config.LocalAddr)
-			checkError(err)
-			listener, err = net.ListenTCP("tcp", addr)
-			checkError(err)
-		}
-
 		log.Println(
 			"version:", VERSION,
 			"smux version:", config.SmuxVer,
-			"listening on:", listener.Addr(),
+			"listening on:", config.LocalAddr,
 			"encryption:", config.Crypt,
 			"QPP:", config.QPP,
 			"QPP Count:", config.QPPCount,
@@ -411,8 +396,8 @@ func main() {
 			block, _ = kcp.NewAESBlockCrypt(pass)
 		}
 
-		createConn := func() (*smux.Session, error) {
-			kcpconn, err := dial(&config, block)
+		createConn := func(idx int) (*smux.Session, error) {
+			kcpconn, err := dial(&config, block, idx)
 			if err != nil {
 				return nil, errors.Wrap(err, "dial()")
 			}
@@ -457,9 +442,9 @@ func main() {
 		}
 
 		// wait until a connection is ready
-		waitConn := func() *smux.Session {
+		waitConn := func(idx int) *smux.Session {
 			for {
-				if session, err := createConn(); err == nil {
+				if session, err := createConn(idx); err == nil {
 					return session
 				} else {
 					log.Println("re-connecting:", err)
@@ -493,26 +478,43 @@ func main() {
 			_Q_ = qpp.NewQPP([]byte(config.Key), uint16(config.QPPCount))
 		}
 
-		for {
-			p1, err := listener.Accept()
-			if err != nil {
-				log.Fatalf("%+v", err)
-			}
-			idx := rr % numconn
-
-			// do auto expiration && reconnection
-			if muxes[idx].session == nil || muxes[idx].session.IsClosed() ||
-				(config.AutoExpire > 0 && time.Now().After(muxes[idx].expiryDate)) {
-				muxes[idx].session = waitConn()
-				muxes[idx].expiryDate = time.Now().Add(time.Duration(config.AutoExpire) * time.Second)
-				if config.AutoExpire > 0 { // only when autoexpire set
-					chScavenger <- muxes[idx]
+		// main loop
+		var wg sync.WaitGroup
+		loop := func(lis net.Listener, index int) {
+			defer wg.Done()
+			for {
+				p1, err := lis.Accept()
+				if err != nil {
+					log.Fatalf("%+v", err)
 				}
-			}
+				idx := rr % numconn
 
-			go handleClient(_Q_, []byte(config.Key), muxes[idx].session, p1, config.Quiet, config.CloseWait)
-			rr++
+				// do auto expiration && reconnection
+				if muxes[idx].session == nil || muxes[idx].session.IsClosed() ||
+					(config.AutoExpire > 0 && time.Now().After(muxes[idx].expiryDate)) {
+					muxes[idx].session = waitConn(index)
+					muxes[idx].expiryDate = time.Now().Add(time.Duration(config.AutoExpire) * time.Second)
+					if config.AutoExpire > 0 { // only when autoexpire set
+						chScavenger <- muxes[idx]
+					}
+				}
+
+				go handleClient(_Q_, []byte(config.Key), muxes[idx].session, p1, config.Quiet, config.CloseWait)
+				rr++
+			}
 		}
+
+		for i, v := range strings.Split(config.RemoteAddr, ",") {
+			addr, err := net.ResolveTCPAddr("tcp", v)
+			checkError(err)
+			lis, err := net.ListenTCP("tcp", addr)
+			checkError(err)
+			wg.Add(1)
+			go loop(lis, i)
+		}
+
+		wg.Wait()
+		return nil
 	}
 	myApp.Run(os.Args)
 }

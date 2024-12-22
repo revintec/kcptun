@@ -87,20 +87,20 @@ GCFLAGS=""
 # done
 
 # ARM64
-OSES=(linux darwin windows)
+# OSES=(linux darwin windows)
 OSES=(darwin)
 for os in ${OSES[@]}; do
-    suffix=""
-    if [ "$os" == "windows" ]
-    then
-        suffix=".exe"
-    fi
+    # suffix=""
+    # if [ "$os" == "windows" ]
+    # then
+    #     suffix=".exe"
+    # fi
     env CGO_ENABLED=0 GOOS=$os GOARCH=arm64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o client_${os}_arm64${suffix} github.com/xtaci/kcptun/client
-    env CGO_ENABLED=0 GOOS=$os GOARCH=arm64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o server_${os}_arm64${suffix} github.com/xtaci/kcptun/server
-    if $UPX; then upx -9 client_${os}_arm64${suffix} server_${os}_arm64${suffix};fi
-    tar -cf kcptun-${os}-arm64-$VERSION.tar client_${os}_arm64${suffix} server_${os}_arm64${suffix}
-    ${COMPRESS} -f kcptun-${os}-arm64-$VERSION.tar
-    $sum kcptun-${os}-arm64-$VERSION.tar.gz
+    # env CGO_ENABLED=0 GOOS=$os GOARCH=arm64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o server_${os}_arm64${suffix} github.com/xtaci/kcptun/server
+    # if $UPX; then upx -9 client_${os}_arm64${suffix} server_${os}_arm64${suffix};fi
+    # tar -cf kcptun-${os}-arm64-$VERSION.tar client_${os}_arm64${suffix} server_${os}_arm64${suffix}
+    # ${COMPRESS} -f kcptun-${os}-arm64-$VERSION.tar
+    # $sum kcptun-${os}-arm64-$VERSION.tar.gz
 done
 
 # #MIPS32LE
