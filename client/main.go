@@ -504,7 +504,7 @@ func main() {
 			}
 		}
 
-		for i, v := range strings.Split(config.RemoteAddr, ",") {
+		for i, v := range strings.Split(config.LocalAddr, ",") {
 			addr, err := net.ResolveTCPAddr("tcp", v)
 			checkError(err)
 			lis, err := net.ListenTCP("tcp", addr)
