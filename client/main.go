@@ -480,10 +480,10 @@ func main() {
 
 		// main loop
 		var wg sync.WaitGroup
-		loop := func(lis net.Listener, index int) {
+		loop := func(listener net.Listener, index int) {
 			defer wg.Done()
 			for {
-				p1, err := lis.Accept()
+				p1, err := listener.Accept()
 				if err != nil {
 					log.Fatalf("%+v", err)
 				}
