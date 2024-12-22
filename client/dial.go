@@ -36,11 +36,11 @@ import (
 )
 
 // dial connects to the remote address
-func dial(config *Config, block kcp.BlockCrypt, idx int) (*kcp.UDPSession, error) {
+func dial(config *Config, block kcp.BlockCrypt, index int) (*kcp.UDPSession, error) {
 	var remoteAddr string
 	if strings.Contains(config.RemoteAddr, ",") {
 		parts := strings.Split(config.RemoteAddr, ",")
-		remoteAddr = parts[idx]
+		remoteAddr = parts[index]
 	} else {
 		mp, err := std.ParseMultiPort(config.RemoteAddr)
 		if err != nil {

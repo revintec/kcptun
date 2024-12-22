@@ -396,8 +396,8 @@ func main() {
 			block, _ = kcp.NewAESBlockCrypt(pass)
 		}
 
-		createConn := func(idx int) (*smux.Session, error) {
-			kcpconn, err := dial(&config, block, idx)
+		createConn := func(index int) (*smux.Session, error) {
+			kcpconn, err := dial(&config, block, index)
 			if err != nil {
 				return nil, errors.Wrap(err, "dial()")
 			}
@@ -442,9 +442,9 @@ func main() {
 		}
 
 		// wait until a connection is ready
-		waitConn := func(idx int) *smux.Session {
+		waitConn := func(index int) *smux.Session {
 			for {
-				if session, err := createConn(idx); err == nil {
+				if session, err := createConn(index); err == nil {
 					return session
 				} else {
 					log.Println("re-connecting:", err)
