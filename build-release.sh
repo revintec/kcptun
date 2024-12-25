@@ -43,20 +43,15 @@ GCFLAGS=""
 # done
 
 # # AMD64 
-# OSES=(linux darwin windows freebsd)
-# for os in ${OSES[@]}; do
-#     suffix=""
-#     if [ "$os" == "windows" ]
-#     then
-#         suffix=".exe"
-#     fi
-#     env CGO_ENABLED=0 GOOS=$os GOARCH=amd64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o client_${os}_amd64${suffix} github.com/xtaci/kcptun/client
-#     env CGO_ENABLED=0 GOOS=$os GOARCH=amd64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o server_${os}_amd64${suffix} github.com/xtaci/kcptun/server
-#     if $UPX; then upx -9 client_${os}_amd64${suffix} server_${os}_amd64${suffix};fi
-#     tar -cf kcptun-${os}-amd64-$VERSION.tar client_${os}_amd64${suffix} server_${os}_amd64${suffix}
-#     ${COMPRESS} -f kcptun-${os}-amd64-$VERSION.tar
-#     $sum kcptun-${os}-amd64-$VERSION.tar.gz
-# done
+OSES=(linux)
+for os in ${OSES[@]}; do
+    # env CGO_ENABLED=0 GOOS=$os GOARCH=amd64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o client_${os}_amd64${suffix} github.com/xtaci/kcptun/client
+    env CGO_ENABLED=0 GOOS=$os GOARCH=amd64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o server_${os}_amd64${suffix} github.com/xtaci/kcptun/server
+    # if $UPX; then upx -9 client_${os}_amd64${suffix} server_${os}_amd64${suffix};fi
+    # tar -cf kcptun-${os}-amd64-$VERSION.tar client_${os}_amd64${suffix} server_${os}_amd64${suffix}
+    # ${COMPRESS} -f kcptun-${os}-amd64-$VERSION.tar
+    # $sum kcptun-${os}-amd64-$VERSION.tar.gz
+done
 
 # # 386
 # OSES=(linux windows)
@@ -87,14 +82,8 @@ GCFLAGS=""
 # done
 
 # ARM64
-# OSES=(linux darwin windows)
 OSES=(darwin)
 for os in ${OSES[@]}; do
-    # suffix=""
-    # if [ "$os" == "windows" ]
-    # then
-    #     suffix=".exe"
-    # fi
     env CGO_ENABLED=0 GOOS=$os GOARCH=arm64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o client_${os}_arm64${suffix} github.com/xtaci/kcptun/client
     # env CGO_ENABLED=0 GOOS=$os GOARCH=arm64 go build -mod=vendor -ldflags "$LDFLAGS" -gcflags "$GCFLAGS" -o server_${os}_arm64${suffix} github.com/xtaci/kcptun/server
     # if $UPX; then upx -9 client_${os}_arm64${suffix} server_${os}_arm64${suffix};fi

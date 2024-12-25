@@ -289,27 +289,29 @@ func main() {
 			config.NoDelay, config.Interval, config.Resend, config.NoCongestion = 1, 10, 2, 1
 		}
 
-		log.Println("version:", VERSION)
-		log.Println("smux version:", config.SmuxVer)
-		log.Println("listening on:", config.Listen)
-		log.Println("target:", config.Target)
-		log.Println("encryption:", config.Crypt)
-		log.Println("nodelay parameters:", config.NoDelay, config.Interval, config.Resend, config.NoCongestion)
-		log.Println("sndwnd:", config.SndWnd, "rcvwnd:", config.RcvWnd)
-		log.Println("compression:", !config.NoComp)
-		log.Println("mtu:", config.MTU)
-		log.Println("datashard:", config.DataShard, "parityshard:", config.ParityShard)
-		log.Println("acknodelay:", config.AckNodelay)
-		log.Println("dscp:", config.DSCP)
-		log.Println("sockbuf:", config.SockBuf)
-		log.Println("smuxbuf:", config.SmuxBuf)
-		log.Println("streambuf:", config.StreamBuf)
-		log.Println("keepalive:", config.KeepAlive)
-		log.Println("snmplog:", config.SnmpLog)
-		log.Println("snmpperiod:", config.SnmpPeriod)
-		log.Println("pprof:", config.Pprof)
-		log.Println("quiet:", config.Quiet)
-		log.Println("tcp:", config.TCP)
+		log.Println(
+			"version:", VERSION,
+			"smux version:", config.SmuxVer,
+			"listening on:", config.Listen,
+			"target:", config.Target,
+			"encryption:", config.Crypt,
+			"nodelay parameters:", config.NoDelay, config.Interval, config.Resend, config.NoCongestion,
+			"sndwnd:", config.SndWnd, "rcvwnd:", config.RcvWnd,
+			"compression:", !config.NoComp,
+			"mtu:", config.MTU,
+			"datashard:", config.DataShard, "parityshard:", config.ParityShard,
+			"acknodelay:", config.AckNodelay,
+			"dscp:", config.DSCP,
+			"sockbuf:", config.SockBuf,
+			"smuxbuf:", config.SmuxBuf,
+			"streambuf:", config.StreamBuf,
+			"keepalive:", config.KeepAlive,
+			"snmplog:", config.SnmpLog,
+			"snmpperiod:", config.SnmpPeriod,
+			"pprof:", config.Pprof,
+			"quiet:", config.Quiet,
+			"tcp:", config.TCP,
+		)
 
 		if config.QPP {
 			minSeedLength := qpp.QPPMinimumSeedLength(8)
@@ -331,9 +333,9 @@ func main() {
 			log.Fatal("unsupported smux version:", config.SmuxVer)
 		}
 
-		log.Println("initiating key derivation")
+		// log.Println("initiating key derivation")
 		pass := pbkdf2.Key([]byte(config.Key), []byte(SALT), 4096, 32, sha1.New)
-		log.Println("key derivation done")
+		// log.Println("key derivation done")
 		var block kcp.BlockCrypt
 		switch config.Crypt {
 		case "null":
